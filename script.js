@@ -85,3 +85,62 @@ function moveTestimonial(step) {
 
 
 
+document.addEventListener("DOMContentLoaded", function () {
+    const contactForm = document.getElementById("contactForm");
+    const successMessage = document.getElementById("successMessage");
+    const errorMessage = document.getElementById("errorMessage");
+
+    contactForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const formData = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        message: document.getElementById("message").value,
+      };
+
+      submitFormToServer(formData)
+        .then(() => {
+          successMessage.style.display = "block";
+          errorMessage.style.display = "none";
+          contactForm.reset();
+
+          // Hide the success message after 3 seconds
+          setTimeout(() => {
+            successMessage.style.display = "none";
+          }, 3000);
+        })
+        .catch((error) => {
+          console.error("Form submission failed:", error);
+          successMessage.style.display = "none";
+          errorMessage.style.display = "block";
+        });
+    });
+  });
+
+  async function submitFormToServer(formData) {
+    const response = await fetch(
+      "https://eddyline-backend.onrender.com/add",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    );
+
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error("Form submission failed.");
+    }
+  }
+
+  document
+    .getElementById("contactButton")
+    .addEventListener("click", function () {
+      document
+        .getElementById("contactFormSection")
+        .scrollIntoView({ behavior: "instant" });
+    });
